@@ -202,14 +202,14 @@ def main():
     test_messages = ['HELLO', 'HOPE', 'NEW YEAR']
     
     for message in test_messages:
-        # Reset machine to initial state
-        machine.reset()
+        # Reset machine to initial rotor positions
+        machine.reset(0,0,0)
         
         # Encrypt
         encrypted = machine.encrypt(message)
         
-        # Reset machine to same initial state for decryption
-        machine.reset()
+        # Reset machine to same initial rotor positions for decryption
+        machine.reset(0,0,0)
         
         # Decrypt (can use encrypt again for the same result)
         decrypted = machine.encrypt(encrypted)
