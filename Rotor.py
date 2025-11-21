@@ -310,10 +310,7 @@ def main():
         all_performance_data.append(performance_data)
     
     # Display comprehensive performance analysis
-    print("=" * 80)
-    print("ROTOR MACHINE PERFORMANCE ANALYSIS")
-    print("=" * 80)
-    print()
+    print("ROTOR MACHINE PERFORMANCE ANALYSIS:")
     
     for data in all_performance_data:
         print(f"Test {data['test_num']}: '{data['message']}'")
