@@ -55,11 +55,11 @@ class Rotor:
     Represents a single rotor in a rotor machine.
     Each rotor has a wiring configuration and can rotate.
     """
-    
+
     def __init__(self, wiring, notch_position=0, initial_position=0):
         """
         Initialize a rotor.
-        
+
         Args:
             wiring: A string of 26 characters representing the substitution mapping
             notch_position: Position where the rotor triggers the next rotor (0-25)
@@ -73,7 +73,7 @@ class Rotor:
         for i, char in enumerate(self.wiring):
             self.reverse_wiring[ord(char) - ord('A')] = chr(ord('A') + i)
         self.reverse_wiring = ''.join(self.reverse_wiring)
-    
+
     def rotate(self):
         """
         Rotate the rotor by one position.
@@ -81,20 +81,20 @@ class Rotor:
         """
         self.position = (self.position + 1) % 26
         return self.position == self.notch_position
-    
+
     def encrypt_forward(self, char):
         """
         Encrypt a character going forward through the rotor.
-        
+
         Args:
             char: Character to encrypt (A-Z)
-        
+
         Returns:
             Encrypted character
         """
         if not char.isalpha():
             return char
-        
+
         char = char.upper()
         # Convert to index (0-25)
         index = (ord(char) - ord('A') + self.position) % 26
@@ -103,20 +103,20 @@ class Rotor:
         # Account for rotation offset
         encrypted_index = (ord(encrypted_char) - ord('A') - self.position) % 26
         return chr(ord('A') + encrypted_index)
-    
+
     def encrypt_backward(self, char):
         """
         Encrypt a character going backward through the rotor (for decryption).
-        
+
         Args:
             char: Character to encrypt (A-Z)
-        
+
         Returns:
             Encrypted character
         """
         if not char.isalpha():
             return char
-        
+
         char = char.upper()
         # Convert to index (0-25)
         index = (ord(char) - ord('A') + self.position) % 26
@@ -132,13 +132,13 @@ class RotorMachine:
     Rotor machine with 3 rotors.
     Encrypts/Decrypts with rotor rotation.
     """
-    
+
     def __init__(self, rotor1_wiring, rotor2_wiring, rotor3_wiring,
                  rotor1_notch=0, rotor2_notch=0, rotor3_notch=0,
                  rotor1_pos=0, rotor2_pos=0, rotor3_pos=0):
         """
         Initialize the rotor machine with 3 rotors.
-        
+
         Args:
             rotor1_wiring: Wiring configuration for rotor 1 (leftmost)
             rotor2_wiring: Wiring configuration for rotor 2 (middle)
@@ -177,43 +177,43 @@ class RotorMachine:
     def encrypt_char(self, char):
         """
         Encrypt a single character through all rotors.
-        
+
         Args:
             char: Character to encrypt
-        
+
         Returns:
             Encrypted character
         """
         if not char.isalpha():
             return char
-        
+
         # Rotate rotors before encryption
         self.rotate_rotors()
-        
+
         char = char.upper()
-        
+
         # Forward through rotors
         result = self.rotor3.encrypt_forward(char)
         result = self.rotor2.encrypt_forward(result)
         result = self.rotor1.encrypt_forward(result)
-        
+
         # Reflector
         result = chr(ord('Z') - (ord(result) - ord('A')))
-        
+
         # Backward through rotors
         result = self.rotor1.encrypt_backward(result)
         result = self.rotor2.encrypt_backward(result)
         result = self.rotor3.encrypt_backward(result)
-        
+
         return result
-    
+
     def encrypt(self, message):
         """
         Encrypt a message.
-        
+
         Args:
             message: Plaintext string to encrypt
-        
+
         Returns:
             Encrypted string
         """
@@ -224,11 +224,11 @@ class RotorMachine:
             else:
                 encrypted.append(char)
         return ''.join(encrypted)
-    
+
     def reset(self, rotor1_pos=0, rotor2_pos=0, rotor3_pos=0):
         """
         Reset the rotors to initial positions.
-        
+
         Args:
             rotor1_pos: Position for rotor 1
             rotor2_pos: Position for rotor 2
@@ -248,7 +248,7 @@ def main():
     rotor1_wiring = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
     rotor2_wiring = "AJDKSIRUXBLHWTMCQGZNPYFVOE"
     rotor3_wiring = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
-    
+
     # Create rotor machine
     machine = RotorMachine(
         rotor1_wiring, rotor2_wiring, rotor3_wiring,
@@ -272,15 +272,15 @@ def main():
         analyzer.start_monitoring()
         
         # Reset machine to initial rotor positions
-        machine.reset(0,0,0)
-        
+        machine.reset(0, 0, 0)
+
         # Encrypt
         encrypted = machine.encrypt(message)
         encryption_rotations = machine.rotation_count
         
         # Reset machine to same initial rotor positions for decryption
-        machine.reset(0,0,0)
-        
+        machine.reset(0, 0, 0)
+
         # Decrypt (can use encrypt again for the same result)
         decrypted = machine.encrypt(encrypted)
         total_rotations = encryption_rotations + machine.rotation_count
@@ -343,4 +343,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
