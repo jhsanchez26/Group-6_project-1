@@ -1,3 +1,8 @@
+import secrets
+import time
+import psutil
+# Generate 8 random bytes (64 bits)
+
 class DES:
     # Predefine Initial Permutation with the inverse
     IP = [58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4,
@@ -188,31 +193,63 @@ class DES:
 
         return self.bits_to_string(self.unpad(out))
 
+
+
+def measure_des_encrypt(des_obj, plaintext, key, repeats=1000):
+    # measure CPU before
+    cpu_before = psutil.cpu_percent(interval=None)
+
+    start = time.perf_counter()
+    for _ in range(repeats):
+        des_obj.encrypt(plaintext, key)
+    end = time.perf_counter()
+
+    cpu_after = psutil.cpu_percent(interval=None)
+
+    avg_time = (end - start) / repeats
+    cpu_usage = (cpu_before + cpu_after) / 2
+    return avg_time, cpu_usage
+
+def measure_des_decrypt(des_obj, ciphertext, key, repeats=1000):
+    cpu_before = psutil.cpu_percent(interval=None)
+    start = time.perf_counter()
+
+    for _ in range(repeats):
+        des_obj.decrypt(ciphertext, key)
+
+    end = time.perf_counter()
+    cpu_after = psutil.cpu_percent(interval=None)
+
+    avg_time = (end - start) / repeats
+    cpu_usage = (cpu_before + cpu_after) / 2
+
+    return avg_time, cpu_usage
+
 des = DES()
+key = [secrets.randbelow(2) for _ in range(64)]
 
-key = [0,1,1,0] * 16
-
-
+print(measure_des_encrypt(des, "HOW ARE YOU", key))
 cipher = des.encrypt("HOW ARE YOU", key)
 print("Cipher:", cipher)
 print("Cipher text:", des.bits_to_string(cipher))
-
+print(measure_des_decrypt(des, cipher, key))
 plain = des.decrypt(cipher, key)
 print("Decrypted:", plain)
 print("\n")
 
-
+print(measure_des_encrypt(des, "HAPPY NEW YEAR", key))
 cipher = des.encrypt("HAPPY NEW YEAR", key)
 print("Cipher:", cipher)
 print("Cipher text:", des.bits_to_string(cipher))
-
+print(measure_des_decrypt(des, cipher, key))
 plain = des.decrypt(cipher, key)
 print("Decrypted:", plain)
 print("\n")
 
+print(measure_des_encrypt(des, "WELCOME TO PUERTO RICO", key))
 cipher = des.encrypt("WELCOME TO PUERTO RICO", key)
 print("Cipher:", cipher)
 print("Cipher text:", des.bits_to_string(cipher))
-
+print(measure_des_decrypt(des, cipher, key))
 plain = des.decrypt(cipher, key)
 print("Decrypted:", plain)
